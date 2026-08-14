@@ -27,6 +27,7 @@
                         Mộc Yên <span class="hidden xs:inline">Homestay</span>
                         <span class="text-[9px] sm:text-[10px] uppercase tracking-wider font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-1.5 sm:px-2 py-0.5 rounded-full">Sale</span>
                     </h1>
+                    <p class="text-[11px] text-slate-400 hidden sm:block">Trang quản lý trạng thái giữ chỗ & kho hình ảnh dành cho Sale</p>
                 </div>
             </div>
             <div class="flex items-center gap-1.5 sm:gap-2 text-xs">
@@ -46,6 +47,16 @@
     <main class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-6 sm:space-y-8 flex-1 w-full">
         <!-- Homestay Cards Section -->
         <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-3.5 sm:p-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 sm:pb-4 mb-4 sm:mb-6 border-b border-slate-100 gap-2">
+                <div>
+                    <h2 class="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        Hình ảnh & Bảng giá các căn
+                    </h2>
+                    <p class="text-[11px] sm:text-xs text-slate-500 mt-0.5">Bấm vào nút Xem ảnh để mở Album & tải về gửi khách hàng</p>
+                </div>
+            </div>
+            <!-- Grid chứa các thẻ -->
             <div class="grid grid-cols-3 gap-2 sm:gap-6" id="homestayCardsContainer"></div>
         </section>
 
@@ -69,9 +80,11 @@
             </div>
 
             <div class="overflow-x-auto rounded-xl border border-slate-200 -mx-1 sm:mx-0 relative">
+                <!-- Loading overlay -->
                 <div id="loadingOverlay" class="absolute inset-0 bg-white/60 backdrop-blur-sm z-40 flex items-center justify-center hidden">
                     <svg class="w-8 h-8 text-teal-600 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
                 </div>
+
                 <table class="w-full text-left text-slate-700 border-collapse min-w-[420px] sm:min-w-full relative">
                     <thead class="uppercase bg-slate-100/95 border-b border-slate-200 sticky top-0 z-20" id="tableHeader">
                         <!-- Rendered via JS -->
@@ -84,26 +97,78 @@
         </section>
     </main>
 
-    <!-- Modal Chọn trạng thái -->
-    <div id="statusModal" onclick="handleBackdropClick(event, 'statusModal')" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 hidden opacity-0 transition-all duration-200">
-        <div class="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl max-w-sm w-full p-5 sm:p-6 transform translate-y-full sm:translate-y-0 sm:scale-95 transition-all duration-200 relative">
-            <button onclick="closeModal('statusModal')" class="absolute top-4 right-4 text-slate-400 p-2 rounded-full hover:bg-slate-100"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg></button>
-            <div class="text-center mb-5">
+    <!-- Dòng chữ ký cuối trang -->
+    <footer class="py-6 text-center text-[10px] sm:text-xs text-slate-400">
+        Phát triển bởi <span class="font-bold text-slate-500">Nguyễn Hoàng</span> &copy; 2026
+    </footer>
+
+    <!-- Modal 1: Modal chọn trạng thái -->
+    <div id="statusModal" onclick="handleStatusBackdropClick(event)" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 hidden opacity-0 transition-all duration-200">
+        <div class="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl max-w-sm w-full p-5 sm:p-6 transform translate-y-full sm:translate-y-0 sm:scale-95 transition-all duration-200 border border-slate-100 relative">
+            <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-4 sm:hidden"></div>
+            <button onclick="closeStatusModal()" class="absolute top-4 right-4 text-slate-400 p-2 rounded-full hover:bg-slate-100"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+            <div class="text-center mb-4 sm:mb-5">
                 <h3 class="text-base font-bold text-slate-900" id="statusModalTitle">Phòng</h3>
                 <p class="text-xs font-semibold text-teal-600 mt-0.5" id="statusModalSubtitle">Ngày</p>
             </div>
-            <div class="space-y-2.5">
-                <button onclick="setStatus('booked')" class="w-full p-3.5 rounded-2xl border-2 border-rose-500 bg-rose-50 text-rose-800 font-bold flex items-center justify-between shadow-sm active:scale-[0.99]"><div class="flex items-center gap-3"><span class="w-4 h-4 rounded-full bg-rose-600"></span><span class="text-sm">Đã có khách (Đỏ)</span></div></button>
-                <button onclick="setStatus('reserved')" class="w-full p-3.5 rounded-2xl border-2 border-amber-400 bg-amber-50 text-amber-900 font-bold flex items-center justify-between shadow-sm active:scale-[0.99]"><div class="flex items-center gap-3"><span class="w-4 h-4 rounded-full bg-amber-400"></span><span class="text-sm">Giữ chỗ (Vàng)</span></div></button>
-                <button onclick="setStatus('')" class="w-full p-3.5 rounded-2xl border border-slate-200 bg-slate-50 text-slate-700 font-semibold flex items-center justify-between active:scale-[0.99]"><div class="flex items-center gap-3"><span class="w-4 h-4 rounded-full bg-white border border-slate-300"></span><span class="text-sm">Trống / Hủy chọn</span></div></button>
+            <div class="space-y-2.5 pb-2 sm:pb-0">
+                <button onclick="setStatus('booked')" class="w-full p-3.5 rounded-2xl border-2 border-rose-500 bg-rose-50 text-rose-800 font-bold flex items-center justify-between shadow-sm active:scale-[0.99]">
+                    <div class="flex items-center gap-3"><span class="w-4 h-4 rounded-full bg-rose-600"></span><span class="text-xs sm:text-sm">Đã có khách (Đỏ)</span></div>
+                </button>
+                <button onclick="setStatus('reserved')" class="w-full p-3.5 rounded-2xl border-2 border-amber-400 bg-amber-50 text-amber-900 font-bold flex items-center justify-between shadow-sm active:scale-[0.99]">
+                    <div class="flex items-center gap-3"><span class="w-4 h-4 rounded-full bg-amber-400"></span><span class="text-xs sm:text-sm">Giữ chỗ (Vàng)</span></div>
+                </button>
+                <button onclick="setStatus('')" class="w-full p-3.5 rounded-2xl border border-slate-200 bg-slate-50 text-slate-700 font-semibold flex items-center justify-between active:scale-[0.99]">
+                    <div class="flex items-center gap-3"><span class="w-4 h-4 rounded-full bg-white border border-slate-300"></span><span class="text-xs sm:text-sm">Trống / Hủy chọn</span></div>
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- Modal Cài đặt Giá -->
-    <div id="settingsModal" onclick="handleBackdropClick(event, 'settingsModal')" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden opacity-0 transition-all duration-200">
-        <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 transform scale-95 transition-all duration-200 relative max-h-[90vh] overflow-y-auto">
-            <button onclick="closeModal('settingsModal')" class="absolute top-4 right-4 text-slate-400 p-2 rounded-full hover:bg-slate-100"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+    <!-- Modal 2: Popup Xem Ảnh -->
+    <div id="imageModal" onclick="handleImageBackdropClick(event)" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-4 hidden opacity-0 transition-opacity duration-200 select-none">
+        <div class="bg-slate-900 rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl max-w-4xl w-full max-h-[95vh] sm:max-h-[92vh] flex flex-col transform scale-95 transition-transform duration-200 border border-slate-800 relative" id="imageModalContent">
+            <!-- Close Button -->
+            <button onclick="closeImageModal()" class="absolute top-3 right-3 sm:top-4 sm:right-4 z-20 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-slate-800/80 hover:bg-slate-700 text-white transition flex items-center justify-center backdrop-blur-sm border border-white/10 shadow-lg active:scale-90">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+
+            <!-- Image Viewport -->
+            <div class="flex-1 overflow-hidden flex items-center justify-center p-2 sm:p-4 bg-slate-950/70 min-h-[280px] sm:min-h-[350px] relative group">
+                <button id="lightboxPrevBtn" onclick="prevLightboxImage()" class="absolute left-2 sm:left-5 z-10 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-slate-900/80 hover:bg-slate-800 text-white transition flex items-center justify-center backdrop-blur-md border border-white/15 shadow-2xl active:scale-90 hidden">
+                    <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
+                </button>
+
+                <img id="enlargedImg" src="" alt="Homestay Photo" class="max-h-[60vh] sm:max-h-[65vh] w-auto object-contain rounded-xl sm:rounded-2xl shadow-2xl transition-all duration-200">
+
+                <button id="lightboxNextBtn" onclick="nextLightboxImage()" class="absolute right-2 sm:right-5 z-10 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-slate-900/80 hover:bg-slate-800 text-white transition flex items-center justify-center backdrop-blur-md border border-white/15 shadow-2xl active:scale-90 hidden">
+                    <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
+                </button>
+
+                <div id="imageCounterBadge" class="absolute bottom-3 left-1/2 -translate-x-1/2 bg-slate-900/80 text-slate-200 text-xs font-semibold px-3 py-1 rounded-full backdrop-blur-md border border-white/10 shadow-md">
+                    1 / 1
+                </div>
+            </div>
+
+            <!-- Lightbox Bottom Action Bar -->
+            <div class="p-3.5 sm:px-6 bg-slate-900 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-2.5">
+                <div class="text-center sm:text-left">
+                    <h4 id="imageModalTitle" class="text-sm sm:text-lg font-bold text-white">Mộc Yên Homestay</h4>
+                    <p class="text-[11px] sm:text-xs text-slate-400 mt-0.5">Thư mục: <span id="imagePathBadge" class="text-emerald-400 font-mono">anh/moc_yen/1.png</span></p>
+                </div>
+                
+                <button id="downloadBtn" onclick="downloadCurrentImage()" class="w-full sm:w-auto px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-semibold text-xs sm:text-sm rounded-xl transition shadow-lg flex items-center justify-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    <span>Tải ảnh hiện tại</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 3: Cài đặt Giá -->
+    <div id="settingsModal" onclick="handleSettingsBackdropClick(event)" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden opacity-0 transition-all duration-200">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 transform scale-95 transition-all duration-200 relative max-h-[90vh] overflow-y-auto" id="settingsModalContent">
+            <button onclick="closeSettingsModal()" class="absolute top-4 right-4 text-slate-400 p-2 rounded-full hover:bg-slate-100"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg></button>
             <h3 class="text-lg font-bold text-slate-900 mb-4">Cài đặt Giá phòng</h3>
             
             <div class="border-b border-slate-200 mb-4 flex gap-4">
@@ -135,19 +200,9 @@
         </div>
     </div>
 
-    <!-- Modal Xem Ảnh -->
-    <div id="imageModal" onclick="handleBackdropClick(event, 'imageModal')" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-4 hidden opacity-0 transition-opacity duration-200 select-none">
-        <div class="bg-slate-900 rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl max-w-4xl w-full max-h-[95vh] sm:max-h-[92vh] flex flex-col transform scale-95 transition-transform duration-200 relative" id="imageModalContent">
-            <button onclick="closeModal('imageModal')" class="absolute top-3 right-3 z-20 w-10 h-10 rounded-full bg-slate-800/80 text-white flex items-center justify-center"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg></button>
-            <div class="flex-1 overflow-hidden flex items-center justify-center p-2 sm:p-4 bg-slate-950/70 min-h-[350px] relative">
-                <button onclick="prevLightboxImage()" class="absolute left-2 sm:left-5 z-10 w-10 h-10 rounded-full bg-slate-900/80 text-white flex items-center justify-center"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg></button>
-                <img id="enlargedImg" src="" class="max-h-[60vh] sm:max-h-[65vh] w-auto object-contain rounded-xl">
-                <button onclick="nextLightboxImage()" class="absolute right-2 sm:right-5 z-10 w-10 h-10 rounded-full bg-slate-900/80 text-white flex items-center justify-center"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg></button>
-            </div>
-        </div>
-    </div>
-
+    <!-- Script điều khiển Toàn bộ -->
     <script>
+        // --- DATA & STATE ---
         let currentRealDate = new Date();
         let displayYear = currentRealDate.getFullYear();
         let displayMonth = currentRealDate.getMonth() + 1;
@@ -159,15 +214,16 @@
         let currentImageIndex = 0;
 
         const ROOM_GALLERIES = {
-            mocYen: { key: 'mocYen', name: 'Mộc Yên', pax: '4 - max 12 pax', images: ['anh/moc_yen/1.png', 'anh/moc_yen/2.png', 'anh/moc_yen/3.png', 'anh/moc_yen/4.png'], fallbacks: ['https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80'] },
-            soc: { key: 'soc', name: 'Sóc', pax: '4 - max 8 pax', images: ['anh/sooc/1.png', 'anh/sooc/2.png', 'anh/sooc/3.png', 'anh/sooc/4.png'], fallbacks: ['https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80'] },
-            mocLam: { key: 'mocLam', name: 'Mộc Lam', pax: '4 - max 8 pax', images: ['anh/moc_lam/1.png', 'anh/moc_lam/2.png'], fallbacks: ['https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1200&q=80'] }
+            mocYen: { key: 'mocYen', name: 'Mộc Yên', pax: '4 - max 12 pax', images: ['anh/moc_yen/1.png', 'anh/moc_yen/2.png', 'anh/moc_yen/3.png', 'anh/moc_yen/4.png','anh/moc_yen/5.png'], fallbacks: ['https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80'] },
+            soc: { key: 'soc', name: 'Sóc', pax: '4 - max 8 pax', images: ['anh/sooc/1.png', 'anh/sooc/2.png', 'anh/sooc/3.png', 'anh/sooc/4.png', 'anh/sooc/5.png'], fallbacks: ['https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80'] },
+            mocLam: { key: 'mocLam', name: 'Mộc Lam', pax: '4 - max 8 pax', images: ['anh/moc_lam/1.png', 'anh/moc_lam/2.png', 'anh/moc_lam/3.png', 'anh/moc_lam/4.png', 'anh/moc_lam/5.png'], fallbacks: ['https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1200&q=80'] }
         };
 
         function formatCurrency(amount) {
             return new Intl.NumberFormat('vi-VN').format(amount);
         }
 
+        // --- FETCH API LOGIC ---
         async function fetchAllData() {
             document.getElementById('loadingOverlay').classList.remove('hidden');
             try {
@@ -181,14 +237,14 @@
                     if(pData.basePrices) basePrices = {...basePrices, ...pData.basePrices};
                     if(pData.specialPrices) specialPrices = pData.specialPrices;
                 }
-            } catch (error) { console.error("Lỗi:", error); }
+            } catch (error) { console.error("Lỗi lấy dữ liệu API:", error); } 
             finally { document.getElementById('loadingOverlay').classList.add('hidden'); }
         }
 
         async function updateMonthUI() {
             document.getElementById('monthYearLabel').textContent = `Tháng ${displayMonth} / ${displayYear}`;
             await fetchAllData();
-            renderHomestayCards(); // Update prices on cards
+            renderHomestayCards();
             renderTable();
         }
 
@@ -196,19 +252,21 @@
         function nextMonth() { displayMonth++; if (displayMonth > 12) { displayMonth = 1; displayYear++; } updateMonthUI(); }
         function goToCurrentMonth() { const now = new Date(); displayYear = now.getFullYear(); displayMonth = now.getMonth() + 1; updateMonthUI(); }
 
+        // --- TABLE RENDER LOGIC ---
         function renderTable() {
-            // Render Header with dynamic Base Prices
             const thead = document.getElementById('tableHeader');
             thead.innerHTML = `
                 <tr>
-                    <th class="py-2 px-1.5 sm:py-3 sm:px-4 w-20 sm:w-36 border-r border-slate-200 text-center font-extrabold text-slate-800 sticky left-0 z-30 bg-slate-100 whitespace-nowrap text-[10px] sm:text-xs">Thứ/Ngày</th>
+                    <th class="py-2 px-1.5 sm:py-3 sm:px-4 w-20 sm:w-36 border-r border-slate-200 text-center font-extrabold text-slate-800 sticky left-0 z-30 bg-slate-100 sticky-col-shadow whitespace-nowrap text-[10px] sm:text-xs">Thứ/Ngày</th>
                     <th class="py-2 px-1.5 sm:py-3 sm:px-4 text-center border-r border-slate-200 font-extrabold text-rose-700 bg-rose-50/70 whitespace-nowrap text-[11px] sm:text-xs">Mộc Yên <span class="block text-[9px] sm:text-[11px] font-normal text-slate-500 normal-case mt-0.5">${formatCurrency(basePrices['mocYen'])} đ</span></th>
                     <th class="py-2 px-1.5 sm:py-3 sm:px-4 text-center border-r border-slate-200 font-extrabold text-teal-700 bg-teal-50/70 whitespace-nowrap text-[11px] sm:text-xs">Sóc <span class="block text-[9px] sm:text-[11px] font-normal text-slate-500 normal-case mt-0.5">${formatCurrency(basePrices['soc'])} đ</span></th>
                     <th class="py-2 px-1.5 sm:py-3 sm:px-4 text-center font-extrabold text-sky-700 bg-sky-50/70 whitespace-nowrap text-[11px] sm:text-xs">Mộc Lam <span class="block text-[9px] sm:text-[11px] font-normal text-slate-500 normal-case mt-0.5">${formatCurrency(basePrices['mocLam'])} đ</span></th>
                 </tr>`;
 
             const tbody = document.getElementById('bookingTableBody');
+            if (!tbody) return;
             tbody.innerHTML = '';
+
             const daysInMonth = new Date(displayYear, displayMonth, 0).getDate();
             const dayNames = ['Chủ Nhật', 'Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7'];
 
@@ -256,7 +314,7 @@
             }
         }
 
-        // --- HOMESTAY CARDS RENDER ---
+        // --- HOMESTAY CARDS ---
         function renderHomestayCards() {
             const container = document.getElementById('homestayCardsContainer');
             if (!container) return;
@@ -269,12 +327,12 @@
                 const cardHtml = `
                     <div class="bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col">
                         <div class="px-2 sm:px-4 py-2 sm:py-3 bg-slate-50 border-b border-slate-100">
-                            <h3 class="font-extrabold text-xs sm:text-base text-slate-900 whitespace-nowrap truncate text-center w-full">${room.name}</h3>
+                            <h3 class="font-extrabold text-xs sm:text-base text-slate-900 whitespace-nowrap truncate text-center w-full" title="${room.name}">${room.name}</h3>
                         </div>
                         <div class="h-28 sm:h-48 overflow-hidden relative cursor-pointer group" onclick="openImageModal('${roomKey}', 0)">
                             <img src="${coverImg}" onerror="this.onerror=null; this.src='${room.fallbacks[0]}';" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
                             <div class="absolute bottom-2 left-2 sm:bottom-3 sm:left-3 z-10">
-                                <span class="text-[9px] sm:text-[11px] font-bold text-white bg-slate-900/70 backdrop-blur-md px-2 py-1 rounded-lg border border-white/20 shadow-md">${room.pax}</span>
+                                <span class="text-[9px] sm:text-[11px] font-bold text-white bg-slate-900/70 backdrop-blur-md px-2 py-1 rounded-lg border border-white/20 shadow-md whitespace-nowrap">${room.pax}</span>
                             </div>
                         </div>
                         <div class="p-2 sm:p-4 flex flex-col gap-1.5 sm:gap-3 bg-white">
@@ -282,6 +340,10 @@
                                 <p class="text-[8px] sm:text-[10px] text-slate-400 font-extrabold uppercase tracking-wider mb-0.5">Giá Cơ Bản</p>
                                 <p class="text-xs sm:text-xl font-black text-rose-600 leading-tight">${formatCurrency(currentBasePrice)}đ</p>
                             </div>
+                            <button onclick="openImageModal('${roomKey}', 0)" class="w-full text-center text-[10px] sm:text-sm font-bold text-teal-800 bg-teal-50 hover:bg-teal-100 active:bg-teal-200 py-1.5 sm:py-2.5 rounded-xl transition-colors flex items-center justify-center gap-1.5 shadow-sm">
+                                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                Xem ảnh
+                            </button>
                         </div>
                     </div>`;
                 container.innerHTML += cardHtml;
@@ -298,10 +360,22 @@
             `).join('');
 
             const modal = document.getElementById('settingsModal');
+            const content = document.getElementById('settingsModalContent');
             document.body.classList.add('overflow-hidden');
             modal.classList.remove('hidden');
-            setTimeout(() => { modal.classList.remove('opacity-0'); modal.children[0].classList.remove('scale-95'); }, 10);
+            setTimeout(() => { modal.classList.remove('opacity-0'); content.classList.remove('scale-95'); content.classList.add('scale-100'); }, 10);
         }
+
+        function closeSettingsModal() {
+            const modal = document.getElementById('settingsModal');
+            const content = document.getElementById('settingsModalContent');
+            modal.classList.add('opacity-0');
+            content.classList.remove('scale-100');
+            content.classList.add('scale-95');
+            setTimeout(() => { modal.classList.add('hidden'); document.body.classList.remove('overflow-hidden'); }, 200);
+        }
+
+        function handleSettingsBackdropClick(e) { if (e.target.id === 'settingsModal') closeSettingsModal(); }
 
         function switchTab(tab) {
             if (tab === 'base') {
@@ -319,7 +393,7 @@
 
         async function saveAllBasePrices() {
             document.getElementById('loadingOverlay').classList.remove('hidden');
-            closeModal('settingsModal');
+            closeSettingsModal();
             try {
                 for (let key of Object.keys(ROOM_GALLERIES)) {
                     let newPrice = parseInt(document.getElementById(`base_${key}`).value);
@@ -331,7 +405,7 @@
                     }
                 }
                 updateMonthUI();
-            } catch (e) { alert('Lỗi khi lưu!'); }
+            } catch (e) { alert('Lỗi khi lưu!'); document.getElementById('loadingOverlay').classList.add('hidden'); }
         }
 
         async function saveSpecialPrice() {
@@ -341,7 +415,7 @@
 
             if (!dateStr) return alert("Vui lòng chọn ngày!");
             document.getElementById('loadingOverlay').classList.remove('hidden');
-            closeModal('settingsModal');
+            closeSettingsModal();
 
             try {
                 const reqType = price > 0 ? 'special' : 'delete_special';
@@ -354,63 +428,59 @@
             } catch (e) { alert('Lỗi khi lưu!'); document.getElementById('loadingOverlay').classList.add('hidden');}
         }
 
-        // --- MODAL UTILS ---
+        // --- STATUS MODAL LOGIC ---
         function openStatusModal(dateNum, roomKey) {
             selectedCell = { dateNum, roomKey };
-            document.getElementById('statusModalTitle').textContent = `${ROOM_GALLERIES[roomKey].name}`;
+            const roomObj = ROOM_GALLERIES[roomKey];
+            document.getElementById('statusModalTitle').textContent = `${roomObj.name}`;
             document.getElementById('statusModalSubtitle').textContent = `Ngày ${dateNum}/${displayMonth}/${displayYear}`;
+            
             const modal = document.getElementById('statusModal');
+            const modalContent = modal.querySelector('div');
+            
             document.body.classList.add('overflow-hidden');
             modal.classList.remove('hidden');
-            setTimeout(() => { modal.classList.remove('opacity-0'); modal.children[0].classList.remove('translate-y-full', 'sm:scale-95'); }, 10);
+            
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modalContent.classList.remove('translate-y-full', 'sm:scale-95');
+                modalContent.classList.add('translate-y-0', 'sm:scale-100');
+            }, 10);
         }
 
-        function openImageModal(roomKey, startIndex) {
-            activeGalleryRoomKey = roomKey; currentImageIndex = startIndex;
-            document.getElementById('enlargedImg').src = ROOM_GALLERIES[roomKey].images[startIndex] || ROOM_GALLERIES[roomKey].fallbacks[0];
-            const modal = document.getElementById('imageModal');
-            document.body.classList.add('overflow-hidden');
-            modal.classList.remove('hidden');
-            setTimeout(() => { modal.classList.remove('opacity-0'); modal.children[0].classList.remove('scale-95'); }, 10);
-        }
+        function closeStatusModal() {
+            const modal = document.getElementById('statusModal');
+            const modalContent = modal.querySelector('div');
 
-        function prevLightboxImage() {
-            let imgs = ROOM_GALLERIES[activeGalleryRoomKey].images;
-            currentImageIndex = (currentImageIndex - 1 + imgs.length) % imgs.length;
-            document.getElementById('enlargedImg').src = imgs[currentImageIndex];
-        }
-        function nextLightboxImage() {
-            let imgs = ROOM_GALLERIES[activeGalleryRoomKey].images;
-            currentImageIndex = (currentImageIndex + 1) % imgs.length;
-            document.getElementById('enlargedImg').src = imgs[currentImageIndex];
-        }
-
-        function closeModal(modalId) {
-            const modal = document.getElementById(modalId);
             modal.classList.add('opacity-0');
-            if (modal.children[0].classList.contains('translate-y-0')) {
-                modal.children[0].classList.add('translate-y-full', 'sm:scale-95');
-            } else {
-                modal.children[0].classList.add('scale-95');
-            }
-            setTimeout(() => { modal.classList.add('hidden'); document.body.classList.remove('overflow-hidden'); }, 200);
+            modalContent.classList.remove('translate-y-0', 'sm:scale-100');
+            modalContent.classList.add('translate-y-full', 'sm:scale-95');
+
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.body.classList.remove('overflow-hidden');
+            }, 200);
         }
 
-        function handleBackdropClick(e, modalId) { if (e.target.id === modalId) closeModal(modalId); }
+        function handleStatusBackdropClick(e) {
+            if (e.target.id === 'statusModal') closeStatusModal();
+        }
 
         async function setStatus(statusType) {
             if (!selectedCell) return;
+            
             const fmtMonth = String(displayMonth).padStart(2, '0');
             const fmtDate = String(selectedCell.dateNum).padStart(2, '0');
             const sqlDateString = `${displayYear}-${fmtMonth}-${fmtDate}`;
             const stateKey = `${displayYear}_${displayMonth}_${selectedCell.dateNum}_${selectedCell.roomKey}`;
 
             document.getElementById('loadingOverlay').classList.remove('hidden');
-            closeModal('statusModal');
+            closeStatusModal();
 
             try {
                 const response = await fetch('/api/bookings', {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ roomKey: selectedCell.roomKey, date: sqlDateString, status: statusType })
                 });
 
@@ -418,12 +488,143 @@
                     if (statusType) bookingState[stateKey] = statusType;
                     else delete bookingState[stateKey];
                     renderTable();
-                } else alert('Lỗi khi lưu!');
-            } catch (error) { alert('Lỗi mạng!'); } 
-            finally { document.getElementById('loadingOverlay').classList.add('hidden'); }
+                } else {
+                    alert('Đã có lỗi xảy ra khi lưu trên Server!');
+                }
+            } catch (error) {
+                alert('Không thể kết nối đến máy chủ!');
+            } finally {
+                document.getElementById('loadingOverlay').classList.add('hidden');
+            }
         }
 
-        window.onload = updateMonthUI;
+        // --- IMAGE MODAL LOGIC ---
+        function openImageModal(roomKey, startIndex = 0) {
+            activeGalleryRoomKey = roomKey;
+            currentImageIndex = startIndex;
+            updateLightboxUI();
+
+            const modal = document.getElementById('imageModal');
+            const content = document.getElementById('imageModalContent');
+
+            document.body.classList.add('overflow-hidden');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                content.classList.remove('scale-95');
+                content.classList.add('scale-100');
+            }, 10);
+        }
+
+        function updateLightboxUI() {
+            const room = ROOM_GALLERIES[activeGalleryRoomKey];
+            if (!room) return;
+
+            const totalImgs = room.images.length;
+            if (currentImageIndex < 0) currentImageIndex = totalImgs - 1;
+            if (currentImageIndex >= totalImgs) currentImageIndex = 0;
+
+            const currentImgPath = room.images[currentImageIndex] || room.fallbacks[0];
+            const fallbackPath = room.fallbacks[currentImageIndex] || room.fallbacks[0];
+
+            const imgElem = document.getElementById('enlargedImg');
+            imgElem.src = currentImgPath;
+            imgElem.onerror = function() {
+                this.onerror = null;
+                this.src = fallbackPath;
+            };
+
+            document.getElementById('imageModalTitle').textContent = `${room.name} (${room.pax}) - Ảnh ${currentImageIndex + 1}/${totalImgs}`;
+            document.getElementById('imagePathBadge').textContent = currentImgPath;
+
+            const prevBtn = document.getElementById('lightboxPrevBtn');
+            const nextBtn = document.getElementById('lightboxNextBtn');
+            const counterBadge = document.getElementById('imageCounterBadge');
+
+            if (totalImgs >= 2) {
+                prevBtn.classList.remove('hidden');
+                nextBtn.classList.remove('hidden');
+                counterBadge.textContent = `${currentImageIndex + 1} / ${totalImgs}`;
+                counterBadge.classList.remove('hidden');
+            } else {
+                prevBtn.classList.add('hidden');
+                nextBtn.classList.add('hidden');
+                counterBadge.classList.add('hidden');
+            }
+        }
+
+        function prevLightboxImage() { currentImageIndex--; updateLightboxUI(); }
+        function nextLightboxImage() { currentImageIndex++; updateLightboxUI(); }
+
+        function closeImageModal() {
+            const modal = document.getElementById('imageModal');
+            const content = document.getElementById('imageModalContent');
+
+            modal.classList.add('opacity-0');
+            content.classList.remove('scale-100');
+            content.classList.add('scale-95');
+
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.body.classList.remove('overflow-hidden');
+            }, 200);
+        }
+
+        function handleImageBackdropClick(event) {
+            if (event.target.id === 'imageModal') closeImageModal();
+        }
+
+        async function downloadCurrentImage() {
+            const room = ROOM_GALLERIES[activeGalleryRoomKey];
+            if (!room) return;
+
+            const currentSrc = document.getElementById('enlargedImg').src;
+            const btn = document.getElementById('downloadBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = `<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> Đang tải...`;
+            
+            try {
+                const response = await fetch(currentSrc);
+                const blob = await response.blob();
+                const blobUrl = URL.createObjectURL(blob);
+                
+                const link = document.createElement('a');
+                link.href = blobUrl;
+                link.download = `${room.name.replace(/\s+/g, '_')}_Anh_${currentImageIndex + 1}.png`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(blobUrl);
+            } catch (err) {
+                window.open(currentSrc, '_blank');
+            } finally {
+                btn.innerHTML = originalText;
+            }
+        }
+
+        // Lắng nghe sự kiện bàn phím
+        document.addEventListener('keydown', function(e) {
+            const imageModal = document.getElementById('imageModal');
+            const isImageModalOpen = imageModal && !imageModal.classList.contains('hidden');
+            const statusModal = document.getElementById('statusModal');
+            const isStatusModalOpen = statusModal && !statusModal.classList.contains('hidden');
+            const settingsModal = document.getElementById('settingsModal');
+            const isSettingsModalOpen = settingsModal && !settingsModal.classList.contains('hidden');
+
+            if (e.key === 'Escape') {
+                if (isStatusModalOpen) closeStatusModal();
+                if (isImageModalOpen) closeImageModal();
+                if (isSettingsModalOpen) closeSettingsModal();
+            } else if (isImageModalOpen && e.key === 'ArrowLeft') {
+                prevLightboxImage();
+            } else if (isImageModalOpen && e.key === 'ArrowRight') {
+                nextLightboxImage();
+            }
+        });
+
+        window.onload = function() {
+            updateMonthUI();
+        };
     </script>
 </body>
 </html>
