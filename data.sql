@@ -52,7 +52,7 @@ CREATE TABLE bookings (
 INSERT INTO rooms (id, room_key, name, capacity_desc, base_price) VALUES
 (1, 'mocYen', 'Mộc Yên', '4 - max 12 pax', 2000000),
 (2, 'soc', 'Sóc', '4 - max 8 pax', 1500000),
-(3, 'mocLam', 'Mộc Lam', '4 - max 8 pax', 1500000);
+(3, 'mocLam', 'Mộc Lam', '4 - max 8 pax', 1200000);
 
 -- Thêm hình ảnh chính (Main Images)
 INSERT INTO room_images (room_id, image_url, is_fallback, display_order) VALUES
