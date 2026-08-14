@@ -31,7 +31,6 @@
                 </div>
             </div>
             <div class="flex items-center gap-1.5 sm:gap-2 text-xs">
-                <!-- Nút Cài đặt Giá -->
                 <button onclick="openSettingsModal()" class="bg-slate-800 hover:bg-slate-700 active:bg-slate-600 text-white p-2 sm:px-3 sm:py-2 rounded-xl transition shadow-sm flex items-center gap-1.5">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                     <span class="hidden sm:inline font-semibold">Cài đặt Giá</span>
@@ -45,7 +44,6 @@
     </header>
 
     <main class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-6 sm:space-y-8 flex-1 w-full">
-        <!-- Homestay Cards Section -->
         <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-3.5 sm:p-6">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 sm:pb-4 mb-4 sm:mb-6 border-b border-slate-100 gap-2">
                 <div>
@@ -56,11 +54,9 @@
                     <p class="text-[11px] sm:text-xs text-slate-500 mt-0.5">Bấm vào nút Xem ảnh để mở Album & tải về gửi khách hàng</p>
                 </div>
             </div>
-            <!-- Grid chứa các thẻ -->
             <div class="grid grid-cols-3 gap-2 sm:gap-6" id="homestayCardsContainer"></div>
         </section>
 
-        <!-- Booking Table Section -->
         <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-3.5 sm:p-6 overflow-hidden">
             <div class="flex flex-col xl:flex-row xl:items-center justify-between pb-3 sm:pb-4 mb-3 sm:mb-4 border-b border-slate-100 gap-3.5">
                 <div>
@@ -80,29 +76,24 @@
             </div>
 
             <div class="overflow-x-auto rounded-xl border border-slate-200 -mx-1 sm:mx-0 relative">
-                <!-- Loading overlay -->
                 <div id="loadingOverlay" class="absolute inset-0 bg-white/60 backdrop-blur-sm z-40 flex items-center justify-center hidden">
                     <svg class="w-8 h-8 text-teal-600 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
                 </div>
 
                 <table class="w-full text-left text-slate-700 border-collapse min-w-[420px] sm:min-w-full relative">
-                    <thead class="uppercase bg-slate-100/95 border-b border-slate-200 sticky top-0 z-20" id="tableHeader">
-                        <!-- Rendered via JS -->
-                    </thead>
-                    <tbody id="bookingTableBody" class="divide-y divide-slate-200 bg-white">
-                        <!-- Rendered via JS -->
-                    </tbody>
+                    <thead class="uppercase bg-slate-100/95 border-b border-slate-200 sticky top-0 z-20" id="tableHeader"></thead>
+                    <tbody id="bookingTableBody" class="divide-y divide-slate-200 bg-white"></tbody>
                 </table>
             </div>
         </section>
     </main>
 
-    <!-- Dòng chữ ký cuối trang -->
+    <!-- Dòng chữ ký -->
     <footer class="py-6 text-center text-[10px] sm:text-xs text-slate-400">
         Phát triển bởi <span class="font-bold text-slate-500">Nguyễn Hoàng</span> &copy; 2026
     </footer>
 
-    <!-- Modal 1: Modal chọn trạng thái -->
+    <!-- Modal trạng thái -->
     <div id="statusModal" onclick="handleStatusBackdropClick(event)" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 hidden opacity-0 transition-all duration-200">
         <div class="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl max-w-sm w-full p-5 sm:p-6 transform translate-y-full sm:translate-y-0 sm:scale-95 transition-all duration-200 border border-slate-100 relative">
             <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-4 sm:hidden"></div>
@@ -125,38 +116,27 @@
         </div>
     </div>
 
-    <!-- Modal 2: Popup Xem Ảnh -->
+    <!-- Modal Xem Ảnh -->
     <div id="imageModal" onclick="handleImageBackdropClick(event)" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-4 hidden opacity-0 transition-opacity duration-200 select-none">
         <div class="bg-slate-900 rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl max-w-4xl w-full max-h-[95vh] sm:max-h-[92vh] flex flex-col transform scale-95 transition-transform duration-200 border border-slate-800 relative" id="imageModalContent">
-            <!-- Close Button -->
             <button onclick="closeImageModal()" class="absolute top-3 right-3 sm:top-4 sm:right-4 z-20 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-slate-800/80 hover:bg-slate-700 text-white transition flex items-center justify-center backdrop-blur-sm border border-white/10 shadow-lg active:scale-90">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
-
-            <!-- Image Viewport -->
             <div class="flex-1 overflow-hidden flex items-center justify-center p-2 sm:p-4 bg-slate-950/70 min-h-[280px] sm:min-h-[350px] relative group">
                 <button id="lightboxPrevBtn" onclick="prevLightboxImage()" class="absolute left-2 sm:left-5 z-10 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-slate-900/80 hover:bg-slate-800 text-white transition flex items-center justify-center backdrop-blur-md border border-white/15 shadow-2xl active:scale-90 hidden">
                     <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
                 </button>
-
                 <img id="enlargedImg" src="" alt="Homestay Photo" class="max-h-[60vh] sm:max-h-[65vh] w-auto object-contain rounded-xl sm:rounded-2xl shadow-2xl transition-all duration-200">
-
                 <button id="lightboxNextBtn" onclick="nextLightboxImage()" class="absolute right-2 sm:right-5 z-10 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-slate-900/80 hover:bg-slate-800 text-white transition flex items-center justify-center backdrop-blur-md border border-white/15 shadow-2xl active:scale-90 hidden">
                     <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
                 </button>
-
-                <div id="imageCounterBadge" class="absolute bottom-3 left-1/2 -translate-x-1/2 bg-slate-900/80 text-slate-200 text-xs font-semibold px-3 py-1 rounded-full backdrop-blur-md border border-white/10 shadow-md">
-                    1 / 1
-                </div>
+                <div id="imageCounterBadge" class="absolute bottom-3 left-1/2 -translate-x-1/2 bg-slate-900/80 text-slate-200 text-xs font-semibold px-3 py-1 rounded-full backdrop-blur-md border border-white/10 shadow-md">1 / 1</div>
             </div>
-
-            <!-- Lightbox Bottom Action Bar -->
             <div class="p-3.5 sm:px-6 bg-slate-900 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-2.5">
                 <div class="text-center sm:text-left">
                     <h4 id="imageModalTitle" class="text-sm sm:text-lg font-bold text-white">Mộc Yên Homestay</h4>
                     <p class="text-[11px] sm:text-xs text-slate-400 mt-0.5">Thư mục: <span id="imagePathBadge" class="text-emerald-400 font-mono">anh/moc_yen/1.png</span></p>
                 </div>
-                
                 <button id="downloadBtn" onclick="downloadCurrentImage()" class="w-full sm:w-auto px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-semibold text-xs sm:text-sm rounded-xl transition shadow-lg flex items-center justify-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                     <span>Tải ảnh hiện tại</span>
@@ -165,7 +145,7 @@
         </div>
     </div>
 
-    <!-- Modal 3: Cài đặt Giá -->
+    <!-- Modal Cài đặt Giá -->
     <div id="settingsModal" onclick="handleSettingsBackdropClick(event)" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden opacity-0 transition-all duration-200">
         <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 transform scale-95 transition-all duration-200 relative max-h-[90vh] overflow-y-auto" id="settingsModalContent">
             <button onclick="closeSettingsModal()" class="absolute top-4 right-4 text-slate-400 p-2 rounded-full hover:bg-slate-100"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg></button>
@@ -195,14 +175,13 @@
                     <input type="number" id="spPrice" placeholder="Nhập giá (VD: 3000000)" class="w-full p-2 border border-slate-300 rounded-lg text-sm bg-white">
                     <button onclick="saveSpecialPrice()" class="w-full bg-rose-600 text-white font-bold py-2 rounded-lg hover:bg-rose-500 text-sm">Cập nhật Giá Lễ</button>
                 </div>
-                <p class="text-[11px] text-slate-500 text-center italic">Lưu ý: Giá lễ sẽ đè lên giá cơ bản của ngày đó. Để xóa, hãy lưu giá bằng 0.</p>
+                <p class="text-[11px] text-slate-500 text-center italic">Lưu ý: Giá lễ sẽ đè lên giá cơ bản. Để xóa giá lễ, hãy lưu giá bằng 0 hoặc bỏ trống.</p>
             </div>
         </div>
     </div>
 
-    <!-- Script điều khiển Toàn bộ -->
+    <!-- Script điều khiển -->
     <script>
-        // --- DATA & STATE ---
         let currentRealDate = new Date();
         let displayYear = currentRealDate.getFullYear();
         let displayMonth = currentRealDate.getMonth() + 1;
@@ -214,22 +193,22 @@
         let currentImageIndex = 0;
 
         const ROOM_GALLERIES = {
-            mocYen: { key: 'mocYen', name: 'Mộc Yên', pax: '4 - max 12 pax', images: ['anh/moc_yen/1.png', 'anh/moc_yen/2.png', 'anh/moc_yen/3.png', 'anh/moc_yen/4.png','anh/moc_yen/5.png'], fallbacks: ['https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80'] },
-            soc: { key: 'soc', name: 'Sóc', pax: '4 - max 8 pax', images: ['anh/sooc/1.png', 'anh/sooc/2.png', 'anh/sooc/3.png', 'anh/sooc/4.png', 'anh/sooc/5.png'], fallbacks: ['https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80'] },
-            mocLam: { key: 'mocLam', name: 'Mộc Lam', pax: '4 - max 8 pax', images: ['anh/moc_lam/1.png', 'anh/moc_lam/2.png', 'anh/moc_lam/3.png', 'anh/moc_lam/4.png', 'anh/moc_lam/5.png'], fallbacks: ['https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1200&q=80'] }
+            mocYen: { key: 'mocYen', name: 'Mộc Yên', pax: '4 - max 12 pax', images: ['anh/moc_yen/1.png', 'anh/moc_yen/2.png', 'anh/moc_yen/3.png', 'anh/moc_yen/4.png'], fallbacks: ['https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80'] },
+            soc: { key: 'soc', name: 'Sóc', pax: '4 - max 8 pax', images: ['anh/sooc/1.png', 'anh/sooc/2.png', 'anh/sooc/3.png', 'anh/sooc/4.png'], fallbacks: ['https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80'] },
+            mocLam: { key: 'mocLam', name: 'Mộc Lam', pax: '4 - max 8 pax', images: ['anh/moc_lam/1.png', 'anh/moc_lam/2.png'], fallbacks: ['https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1200&q=80'] }
         };
 
         function formatCurrency(amount) {
             return new Intl.NumberFormat('vi-VN').format(amount);
         }
 
-        // --- FETCH API LOGIC ---
         async function fetchAllData() {
             document.getElementById('loadingOverlay').classList.remove('hidden');
             try {
+                // CHÚ Ý: Lệnh { cache: 'no-store' } dưới đây là cốt lõi để chống chập chờn khi F5
                 const [bookRes, priceRes] = await Promise.all([
-                    fetch(`/api/bookings?year=${displayYear}&month=${displayMonth}`),
-                    fetch(`/api/prices?year=${displayYear}&month=${displayMonth}`)
+                    fetch(`/api/bookings?year=${displayYear}&month=${displayMonth}`, { cache: 'no-store' }),
+                    fetch(`/api/prices?year=${displayYear}&month=${displayMonth}`, { cache: 'no-store' })
                 ]);
                 if (bookRes.ok) bookingState = await bookRes.json();
                 if (priceRes.ok) {
@@ -252,7 +231,6 @@
         function nextMonth() { displayMonth++; if (displayMonth > 12) { displayMonth = 1; displayYear++; } updateMonthUI(); }
         function goToCurrentMonth() { const now = new Date(); displayYear = now.getFullYear(); displayMonth = now.getMonth() + 1; updateMonthUI(); }
 
-        // --- TABLE RENDER LOGIC ---
         function renderTable() {
             const thead = document.getElementById('tableHeader');
             thead.innerHTML = `
@@ -314,7 +292,6 @@
             }
         }
 
-        // --- HOMESTAY CARDS ---
         function renderHomestayCards() {
             const container = document.getElementById('homestayCardsContainer');
             if (!container) return;
@@ -350,7 +327,7 @@
             });
         }
 
-        // --- SETTINGS MODAL LOGIC ---
+        // --- BẢNG CÀI ĐẶT GIÁ ---
         function openSettingsModal() {
             document.getElementById('basePriceForm').innerHTML = Object.keys(ROOM_GALLERIES).map(key => `
                 <div class="flex items-center justify-between bg-white p-2 rounded border border-slate-200">
@@ -428,7 +405,7 @@
             } catch (e) { alert('Lỗi khi lưu!'); document.getElementById('loadingOverlay').classList.add('hidden');}
         }
 
-        // --- STATUS MODAL LOGIC ---
+        // --- ĐÁNH DẤU PHÒNG ---
         function openStatusModal(dateNum, roomKey) {
             selectedCell = { dateNum, roomKey };
             const roomObj = ROOM_GALLERIES[roomKey];
@@ -489,16 +466,19 @@
                     else delete bookingState[stateKey];
                     renderTable();
                 } else {
-                    alert('Đã có lỗi xảy ra khi lưu trên Server!');
+                    alert('Lưu trên Server thất bại! (Báo lỗi từ Database)');
+                    // Nếu lỗi thì phải load lại bảng từ db
+                    updateMonthUI();
                 }
             } catch (error) {
-                alert('Không thể kết nối đến máy chủ!');
+                alert('Mất mạng hoặc máy chủ đang ngủ đông, vui lòng thử lại!');
+                updateMonthUI();
             } finally {
                 document.getElementById('loadingOverlay').classList.add('hidden');
             }
         }
 
-        // --- IMAGE MODAL LOGIC ---
+        // --- XEM ẢNH ---
         function openImageModal(roomKey, startIndex = 0) {
             activeGalleryRoomKey = roomKey;
             currentImageIndex = startIndex;
@@ -602,7 +582,7 @@
             }
         }
 
-        // Lắng nghe sự kiện bàn phím
+        // Bắt phím bấm trên máy tính
         document.addEventListener('keydown', function(e) {
             const imageModal = document.getElementById('imageModal');
             const isImageModalOpen = imageModal && !imageModal.classList.contains('hidden');
