@@ -1,223 +1,197 @@
 package main
 
+// gọi thư viện
 import (
+	"crypto/sha256"
 	"database/sql"
+	"embed"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"io/fs"
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 
-	_ "github.com/lib/pq"
+	_ "modernc.org/sqlite"
 )
+
+//go:embed templates
+var templateFiles embed.FS
+
+type Category struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
+}
+type Post struct {
+	ID         int    `json:"id"`
+	Title      string `json:"title"`
+	Content    string `json:"content"`
+	CategoryID int    `json:"category_id"`
+}
+type User struct {
+	ID       int    `json:"id"`
+	FullName string `json:"full_name"`
+	Email    string `json:"email"`
+	Password string `json:"password,omitempty"`
+	Role     string `json:"role"`
+}
 
 var db *sql.DB
 
-type BookingRequest struct {
-	RoomKey string `json:"roomKey"`
-	Date    string `json:"date"`
-	Status  string `json:"status"`
+// Hàm băm mật khẩu cơ bản bằng SHA256
+func hashPassword(password string) string {
+	h := sha256.New()
+	h.Write([]byte(password))
+	return hex.EncodeToString(h.Sum(nil))
 }
 
-type PriceRequest struct {
-	Type    string `json:"type"` // "base", "special", "delete_special"
-	RoomKey string `json:"roomKey"`
-	Date    string `json:"date"`
-	Price   int    `json:"price"`
-}
-
+// Hàm khởi tạo Database
 func initDB() {
-	dbURL := os.Getenv("DATABASE_URL")
-	if dbURL == "" {
-		log.Fatal("❌ LỖI: Chưa có đường dẫn DATABASE_URL")
-	}
-
 	var err error
-	db, err = sql.Open("postgres", dbURL)
+	_, errCheck := os.Stat("database.db")
+	dbExists := !os.IsNotExist(errCheck)
+
+	db, err = sql.Open("sqlite", "database.db")
 	if err != nil {
-		log.Fatal("Lỗi kết nối Supabase:", err)
+		log.Fatal(err)
 	}
 
-	// 1. Bảng phòng (Lưu giá cơ bản)
-	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS rooms (
-		id SERIAL PRIMARY KEY,
-		room_key VARCHAR(50) UNIQUE,
-		name VARCHAR(100),
-		capacity_desc VARCHAR(100),
-		base_price INTEGER
-	);`)
-	if err != nil {
-		log.Fatal("Lỗi tạo bảng rooms:", err)
-	}
+	if !dbExists {
+		fmt.Println("Phát hiện lần chạy đầu tiên. Đang khởi tạo Database từ web.sql...")
+		sqlBytes, err := os.ReadFile("web.sql")
+		if err != nil {
+			log.Fatal("Lỗi: Không tìm thấy file web.sql! ", err)
+		}
+		_, err = db.Exec(string(sqlBytes))
+		if err != nil {
+			log.Fatal("Lỗi khi chạy lệnh SQL: ", err)
+		}
 
-	// 2. Bảng đặt phòng
-	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS bookings (
-		id SERIAL PRIMARY KEY,
-		room_id INTEGER REFERENCES rooms(id),
-		booking_date VARCHAR(20),
-		status VARCHAR(20),
-		UNIQUE(room_id, booking_date)
-	);`)
-	if err != nil {
-		log.Fatal("Lỗi tạo bảng bookings:", err)
-	}
+		// Tạo sẵn một tài khoản Admin mặc định để test đăng bài
+		adminPass := hashPassword("123456")
+		db.Exec("INSERT INTO users (full_name, email, password_hash, role) VALUES (?, ?, ?, ?)", "Quản Trị Viên", "admin@example.com", adminPass, "admin")
 
-	// 3. Bảng giá ngày lễ/ngày đặc biệt
-	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS special_prices (
-		id SERIAL PRIMARY KEY,
-		room_key VARCHAR(50),
-		date_str VARCHAR(20),
-		price INTEGER,
-		UNIQUE(room_key, date_str)
-	);`)
-	if err != nil {
-		log.Fatal("Lỗi tạo bảng special_prices:", err)
+		fmt.Println("Đã nạp dữ liệu từ web.sql và tạo Admin thành công!")
+	} else {
+		fmt.Println("Đã kết nối với Database hiện tại thành công!")
 	}
-
-	db.Exec(`INSERT INTO rooms (room_key, name, capacity_desc, base_price) VALUES
-		('mocYen', 'Mộc Yên', '4 - max 12 pax', 2000000),
-		('soc', 'Sóc', '4 - max 8 pax', 1500000),
-		('mocLam', 'Mộc Lam', '4 - max 8 pax', 1500000)
-		ON CONFLICT (room_key) DO NOTHING;`)
 }
 
+// Hàm main
 func main() {
 	initDB()
-	defer db.Close()
 
-	fs := http.FileServer(http.Dir("./static"))
-	http.Handle("/", fs)
-	http.HandleFunc("/api/bookings", bookingsHandler)
-	http.HandleFunc("/api/prices", pricesHandler) // API mới quản lý giá
+	// 1. API Đăng nhập
+	http.HandleFunc("/api/auth/login", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		if r.Method == http.MethodPost {
+			var creds User
+			json.NewDecoder(r.Body).Decode(&creds)
+			hashed := hashPassword(creds.Password)
 
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
-
-	fmt.Println("🚀 SERVER ĐANG CHẠY TẠI CỔNG:", port)
-	log.Fatal(http.ListenAndServe(":"+port, nil))
-}
-
-func bookingsHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
-	switch r.Method {
-	case "GET":
-		year := r.URL.Query().Get("year")
-		month := r.URL.Query().Get("month")
-
-		sqlMonth := month
-		if len(sqlMonth) == 1 {
-			sqlMonth = "0" + sqlMonth
-		}
-
-		query := `
-			SELECT r.room_key, CAST(SUBSTRING(b.booking_date FROM 9 FOR 2) AS INTEGER), b.status
-			FROM bookings b JOIN rooms r ON b.room_id = r.id
-			WHERE b.booking_date LIKE $1
-		`
-		datePattern := fmt.Sprintf("%s-%s-%%", year, sqlMonth)
-		rows, err := db.Query(query, datePattern)
-		if err != nil {
-			http.Error(w, `{"error": "Lỗi truy vấn DB"}`, http.StatusInternalServerError)
-			return
-		}
-		defer rows.Close()
-
-		bookingState := make(map[string]string)
-		for rows.Next() {
-			var roomKey, status string
-			var day int
-			if err := rows.Scan(&roomKey, &day, &status); err == nil {
-				key := fmt.Sprintf("%s_%s_%d_%s", year, month, day, roomKey)
-				bookingState[key] = status
+			var user User
+			err := db.QueryRow("SELECT id, full_name, email, role FROM users WHERE email = ? AND password_hash = ?", creds.Email, hashed).Scan(&user.ID, &user.FullName, &user.Email, &user.Role)
+			if err != nil {
+				http.Error(w, `{"error": "Sai email hoặc mật khẩu"}`, http.StatusUnauthorized)
+				return
 			}
+			json.NewEncoder(w).Encode(user)
 		}
-		json.NewEncoder(w).Encode(bookingState)
+	})
 
-	case "POST":
-		var req BookingRequest
-		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			http.Error(w, `{"error": "Dữ liệu không hợp lệ"}`, http.StatusBadRequest)
+	// 2. API Đăng ký
+	http.HandleFunc("/api/auth/register", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		if r.Method == http.MethodPost {
+			var newUser User
+			json.NewDecoder(r.Body).Decode(&newUser)
+			hashed := hashPassword(newUser.Password)
+
+			_, err := db.Exec("INSERT INTO users (full_name, email, password_hash, role) VALUES (?, ?, ?, ?)", newUser.FullName, newUser.Email, hashed, "student")
+			if err != nil {
+				// Tạm thời in thẳng biến err ra ngoài để xem lỗi thực sự là gì
+				http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err), http.StatusBadRequest)
+				return
+			}
+			w.WriteHeader(http.StatusCreated)
+			json.NewEncoder(w).Encode(map[string]string{"message": "Đăng ký thành công!"})
+		}
+	})
+
+	// 3. API Danh mục
+	http.HandleFunc("/api/categories", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		if r.Method == http.MethodGet {
+			rows, _ := db.Query("SELECT category_id, category_name FROM categories")
+			defer rows.Close()
+			var cats []Category
+			for rows.Next() {
+				var c Category
+				rows.Scan(&c.ID, &c.Name)
+				cats = append(cats, c)
+			}
+			json.NewEncoder(w).Encode(cats)
+		}
+	})
+
+	// 4. API Bài Viết (CRUD)
+	http.HandleFunc("/api/posts", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+
+		if r.Method == http.MethodGet {
+			idQuery := r.URL.Query().Get("id")
+			if idQuery != "" {
+				row := db.QueryRow("SELECT id, title, content, category_id FROM posts WHERE id = ?", idQuery)
+				var p Post
+				if err := row.Scan(&p.ID, &p.Title, &p.Content, &p.CategoryID); err != nil {
+					http.Error(w, `{"error": "Không tìm thấy bài viết"}`, http.StatusNotFound)
+					return
+				}
+				json.NewEncoder(w).Encode(p)
+				return
+			}
+
+			categoryQuery := r.URL.Query().Get("category_id")
+			var rows *sql.Rows
+			if categoryQuery != "" {
+				catID, _ := strconv.Atoi(categoryQuery)
+				rows, _ = db.Query("SELECT id, title, content, category_id FROM posts WHERE category_id = ? ORDER BY id DESC", catID)
+			} else {
+				rows, _ = db.Query("SELECT id, title, content, category_id FROM posts ORDER BY id DESC")
+			}
+			defer rows.Close()
+
+			var posts []Post
+			for rows.Next() {
+				var p Post
+				rows.Scan(&p.ID, &p.Title, &p.Content, &p.CategoryID)
+				posts = append(posts, p)
+			}
+			if posts == nil {
+				posts = []Post{}
+			}
+			json.NewEncoder(w).Encode(posts)
 			return
 		}
 
-		var roomID int
-		err := db.QueryRow("SELECT id FROM rooms WHERE room_key = $1", req.RoomKey).Scan(&roomID)
-		if err != nil {
-			http.Error(w, `{"error": "Không tìm thấy phòng"}`, http.StatusInternalServerError)
+		if r.Method == http.MethodPost {
+			var newPost Post
+			json.NewDecoder(r.Body).Decode(&newPost)
+			_, err := db.Exec("INSERT INTO posts (title, content, category_id) VALUES (?, ?, ?)", newPost.Title, newPost.Content, newPost.CategoryID)
+			if err != nil {
+				http.Error(w, `{"error": "Lỗi lưu dữ liệu"}`, http.StatusInternalServerError)
+				return
+			}
+			w.WriteHeader(http.StatusCreated)
+			json.NewEncoder(w).Encode(map[string]string{"message": "Đăng bài thành công!"})
 			return
 		}
+	})
 
-		if req.Status == "" {
-			db.Exec("DELETE FROM bookings WHERE room_id = $1 AND booking_date = $2", roomID, req.Date)
-		} else {
-			query := `
-				INSERT INTO bookings (room_id, booking_date, status) VALUES ($1, $2, $3)
-				ON CONFLICT(room_id, booking_date) DO UPDATE SET status = EXCLUDED.status;
-			`
-			db.Exec(query, roomID, req.Date, req.Status)
-		}
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"success": true}`))
-	}
-}
-
-// Hàm xử lý Giá phòng (MỚI)
-func pricesHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
-	switch r.Method {
-	case "GET":
-		// Lấy giá cơ bản
-		basePrices := make(map[string]int)
-		rows, _ := db.Query("SELECT room_key, base_price FROM rooms")
-		for rows.Next() {
-			var rk string
-			var bp int
-			rows.Scan(&rk, &bp)
-			basePrices[rk] = bp
-		}
-		rows.Close()
-
-		// Lấy giá ngày lễ trong tháng
-		year := r.URL.Query().Get("year")
-		month := r.URL.Query().Get("month")
-		sqlMonth := month
-		if len(sqlMonth) == 1 {
-			sqlMonth = "0" + sqlMonth
-		}
-		specialPrices := make(map[string]int)
-		pattern := fmt.Sprintf("%s-%s-%%", year, sqlMonth)
-		rows2, _ := db.Query("SELECT room_key, CAST(SUBSTRING(date_str FROM 9 FOR 2) AS INTEGER), price FROM special_prices WHERE date_str LIKE $1", pattern)
-		for rows2.Next() {
-			var rk string
-			var d, p int
-			rows2.Scan(&rk, &d, &p)
-			key := fmt.Sprintf("%s_%s_%d_%s", year, month, d, rk)
-			specialPrices[key] = p
-		}
-		rows2.Close()
-
-		response := map[string]interface{}{
-			"basePrices":    basePrices,
-			"specialPrices": specialPrices,
-		}
-		json.NewEncoder(w).Encode(response)
-
-	case "POST":
-		var req PriceRequest
-		json.NewDecoder(r.Body).Decode(&req)
-
-		if req.Type == "base" {
-			db.Exec("UPDATE rooms SET base_price = $1 WHERE room_key = $2", req.Price, req.RoomKey)
-		} else if req.Type == "special" {
-			db.Exec("INSERT INTO special_prices (room_key, date_str, price) VALUES ($1, $2, $3) ON CONFLICT (room_key, date_str) DO UPDATE SET price = EXCLUDED.price", req.RoomKey, req.Date, req.Price)
-		} else if req.Type == "delete_special" {
-			db.Exec("DELETE FROM special_prices WHERE room_key = $1 AND date_str = $2", req.RoomKey, req.Date)
-		}
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"success": true}`))
-	}
+	frontend, _ := fs.Sub(templateFiles, "templates")
+	http.Handle("/", http.FileServer(http.FS(frontend)))
+	fmt.Println("Giao diện đã sẵn sàng tại http://localhost:8080/student_handbook.html")
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
