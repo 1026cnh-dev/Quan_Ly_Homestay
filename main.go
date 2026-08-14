@@ -56,7 +56,7 @@ func initDB() {
 	db.Exec(`INSERT INTO rooms (room_key, name, capacity_desc, base_price) VALUES
 		('mocYen', 'Mộc Yên', '4 - max 12 pax', 2000000),
 		('soc', 'Sóc', '4 - max 8 pax', 1500000),
-		('mocLam', 'Mộc Lam', '4 - max 8 pax', 1500000)
+		('mocLam', 'Mộc Lam', '4 - max 8 pax', 1200000)
 		ON CONFLICT (room_key) DO NOTHING;`)
 }
 
