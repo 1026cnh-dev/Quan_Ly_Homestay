@@ -7,7 +7,7 @@ Hệ thống quản lý đặt phòng, theo dõi trạng thái giữ chỗ và k
 - Theo dõi lịch đặt phòng: Giao diện trực quan xem trạng thái phòng (Trống, Giữ chỗ, Đã có khách) theo từng ngày trong tháng.
 - **Quản lý linh hoạt:** Dễ dàng thao tác click để thay đổi trạng thái phòng trực tiếp trên bảng.
 - **Cấu hình giá:** Hỗ trợ cài đặt giá cơ bản cho từng hạng phòng và tùy chỉnh giá riêng cho các ngày lễ, cuối tuần.
-- **Thư viện hình ảnh:** Tích hợp bộ sưu tập ảnh cho từng phòng (Mộc Yên, Sóc, Mộc Lam) với trình xem ảnh (Lightbox) có tính năng tải xuống trực tiếp.
+- **Thư viện hình ảnh:** Tích hợp bộ sưu tập ảnh cho từng phòng với trình xem ảnh (Lightbox) có tính năng tải xuống trực tiếp.
 - **Giao diện thân thiện:** Responsive hoàn toàn, hiển thị tốt trên cả điện thoại di động và máy tính nhờ Tailwind CSS.
 
 ## 🛠 Công nghệ sử dụng
